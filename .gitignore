@@ -1,0 +1,11 @@
+free-nextjs-admin-dashboard-v-2.0.zip
+be/.env
+fe/.env
+fe/.idea/
+fe/.next
+.DS_Store
+fe/node_modules
+fe/package-lock.json
+fe/LICENSE
+be/go.sum
+be/tmp/
