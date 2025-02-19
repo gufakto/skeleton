@@ -4,7 +4,7 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { FormLogin } from "@/schemas";
@@ -12,8 +12,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { InputCustom } from "@/components/form/input/InputCustome";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import LoadingFullpage from "../ui/loading/LoadingFullPage";
+import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
 import { toast } from "react-toastify";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,26 +24,26 @@ export default function SignInForm() {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof FormLogin>>({
-      resolver: zodResolver(FormLogin),
-      defaultValues: {
-        email: "",
-        password: "",
-      }
+    resolver: zodResolver(FormLogin),
+    defaultValues: {
+      email: "",
+      password: "",
+    }
   });
-  
+
   const onSubmit = (values: z.infer<typeof FormLogin>) => {
-    startTransition( async () => {
-        const result = await signIn("credentials", {
-            email: values.email,
-            password: values.password,
-            redirect: false,
-          });
-      
-          if (result?.ok) {
-            router.push("/admin"); // Redirect to dashboard after successful login
-          } else {
-            toast.error(result?.error || "An error occurred");
-          }
+    startTransition(async () => {
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (result?.ok) {
+        router.push("/admin"); // Redirect to dashboard after successful login
+      } else {
+        toast.error(result?.error || "An error occurred");
+      }
     });
   };
 
@@ -67,9 +69,15 @@ export default function SignInForm() {
                   </Label>
                   <InputCustom
                     type="email"
-                    placeholder="info@gmail.com" 
-                    {...form.register('email')}/>
-                    {form.formState.errors.email && <p className="text-error-500">{form.formState.errors.email.message}</p>}
+                    placeholder="info@gmail.com"
+                    {...form.register('email')} />
+
+                  {form.formState.errors.email && <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {form.formState.errors.email.message}
+                    </AlertDescription>
+                  </Alert>}
                 </div>
                 <div>
                   <Label htmlFor="password">
@@ -91,8 +99,13 @@ export default function SignInForm() {
                         <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
                       )}
                     </span>
-                    {form.formState.errors.password && <p className="text-error-500">{form.formState.errors.password.message}</p>}
                   </div>
+                  {form.formState.errors.password && <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {form.formState.errors.password.message}
+                    </AlertDescription>
+                  </Alert>}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

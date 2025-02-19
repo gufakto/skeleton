@@ -11,6 +11,5 @@ export default function User() {
         <TableUser />
       </div>
     </div>
-    
   );
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import NextAuth from "next-auth"
+import NextAuth, { getServerSession } from "next-auth"
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google';
@@ -147,3 +147,5 @@ async function refreshAccessToken(refreshToken: string) {
 const handlers = NextAuth(authOptions);
 
 export { handlers as GET, handlers as POST, authOptions }
+
+

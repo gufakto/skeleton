@@ -80,6 +80,7 @@ func (u *userService) Update(user dto.UserUpdateReq, id int64) (dto.UserData, er
 	}
 	dataset.Name = user.Name
 	dataset.Email = user.Email
+	dataset.Blocked = user.IsBlocked()
 	dataset.UpdatedAt = time.Now()
 	err = u.userRepo.Update(&dataset)
 	if err != nil {
@@ -89,6 +90,7 @@ func (u *userService) Update(user dto.UserUpdateReq, id int64) (dto.UserData, er
 		ID:        dataset.ID,
 		Name:      dataset.Name,
 		Email:     dataset.Email,
+		Blocked:   dataset.Blocked,
 		CreatedAt: dataset.CreatedAt,
 		UpdatedAt: dataset.UpdatedAt,
 	}, nil
