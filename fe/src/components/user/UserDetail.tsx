@@ -11,6 +11,7 @@ import { updateUser } from "@/lib/user";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
+import { SaveIcon, Undo2 } from "lucide-react";
 
 type UserDetailProps = {
   user: UserModel;
@@ -115,11 +116,13 @@ const UserDetail: React.FC<UserDetailProps> = ({
         <div className="flex flex-col gap-4 md:flex-row my-2">
             <div className="w-full flex items-center justify-between">
                 <Link href={`/admin/user`}> 
-                    <Button type="button" variant="outline">Back</Button>
+                    <Button type="button" variant="secondary">
+                       <Undo2/> Back
+                    </Button>
                 </Link>
                 {editable && 
                 <Button type="submit">
-                        Submit
+                    <SaveIcon/> Save
                 </Button>}
             </div>
         </div>

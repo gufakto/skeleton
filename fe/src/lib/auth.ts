@@ -48,14 +48,6 @@ const authOptions = {
                         },
                     });
                     return response.data.data; // Assuming the API sends user data on successful OTP initiation
-                    // const data = response.data.data;
-                    // return {
-                    //     accessToken: data.token,
-                    //     refreshToken: data.refresh_token, 
-                    //     accessTokenExpires: data.token_expires,
-                    //     refreshTokenExpires: data.refresh_token_expires,
-                    //     user: data.user,
-                    // }
                 } catch (error: any) {
                     console.log("ERR: ",error);
                     throw new Error(error.response?.data?.message || 'Login failed');
@@ -66,10 +58,6 @@ const authOptions = {
     callbacks: {
         async jwt({ token, user }: { token: any; user: any }) {
             if (user) {
-                // token.expires = user.expires;
-                // token.accessToken = user.token;
-                // token.refreshToken = user.refresh_token;
-                // token.user = user.user;
                 return {
                     accessToken: user.token,
                     refreshToken: user.refresh_token,

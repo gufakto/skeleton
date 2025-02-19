@@ -1,7 +1,7 @@
 "use client";
 import { CreateUserForm } from "@/models/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { createUser } from "@/lib/user";
 import { useRouter } from "next/navigation";
+import { Eye, EyeClosed, SaveIcon, Undo2 } from "lucide-react";
 
 const CreateUser = () => {
     const [isPending, startTransition] = useTransition();
     const router = useRouter()
+    const [isShowedPass, setIsShowedPass] = useState(false);
     const userForm = useForm<z.infer<typeof CreateUserForm>>({
         resolver: zodResolver(CreateUserForm),
         defaultValues: {
@@ -42,9 +44,11 @@ const CreateUser = () => {
     const showPassword = () => {
         const passwordInput = document.getElementById("password") as HTMLInputElement;
         if (passwordInput.type === "password") {
-            passwordInput.type = "text";
+            // passwordInput.type = "text";
+            setIsShowedPass(true)
         } else {
-            passwordInput.type = "password";
+            // passwordInput.type = "password";
+            setIsShowedPass(false)
         }
     }
 
@@ -84,22 +88,36 @@ const CreateUser = () => {
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <div className="flex w-full max-w-sm items-center space-x-2">
+                                <div className="flex w-full max-w-sm items-center">
                                     <Input 
                                         id="password"
                                         {...field} 
                                         disabled={isPending}
                                         placeholder="******"
-                                        type="password"
+                                        type={isShowedPass ? "text" : "password"}
+                                        className="rounded-r-none"
                                     />
-                                    <Button type="button" variant={'default'} onClick={showPassword}>Show</Button>
+                                    <Button 
+                                        className="rounded-l-none"
+                                        type="button" 
+                                        onClick={showPassword}>
+                                            {isShowedPass ? <EyeClosed/>:<Eye/>}
+                                        <span className="sr-only">Show Password</span>
+                                    </Button>
                                 </div>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <div className="flex flex-row gap-2 justify-between">
+                    <Button type="button" variant={'secondary'} onClick={() => router.back()}>
+                        <Undo2/> Back
+                    </Button>
+                    <Button type="submit">
+                        <SaveIcon/> Save
+                    </Button>
+                </div>
             </form>
         </Form>
     )
