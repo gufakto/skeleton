@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useTransition } from "react";
 import { UserModel } from "@/models/user";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { getRelativeTime } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, Info, Pencil, Trash } from "lucide-react";
+import { CirclePlus, FilePlus, Info, Pencil, Trash } from "lucide-react";
 import { getUsers } from "@/lib/user";
 import { toast } from "react-toastify";
 import LoadingFullpage from "../ui/loading/LoadingFullPage";
@@ -22,7 +22,6 @@ export default function TableUser() {
       try {
         const res = await getUsers();
         if (res.ok) {
-          console.log(res);
           setUsers(res.data);
         }
       } catch (err: any) {
@@ -33,33 +32,28 @@ export default function TableUser() {
 
   return (
     <div >
-      <LoadingFullpage isShown={isPending}/>
-        <Link href={'/admin/user/create'}>
-          <Button variant={'addbutton'}><CirclePlus/> Add User</Button>
+      <LoadingFullpage isShown={isPending} />
+      <div className="flex">
+        <Link href={'/admin/user/create'} className="ml-auto">
+          <Button><FilePlus /> Add </Button>
         </Link>
-      <div className="max-w-full overflow-x-auto">
+      </div>
+      <div className="max-w-full overflow-x-auto mt-2">
         <Table className="min-w-full table-auto">
-          <TableHeader>
+          <TableHeader className="bg-gray-100">
             <TableRow>
-              <TableHead className="w-[100px]">ID</TableHead>
+              <TableHead>Actions</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead className="text-right">Status</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead>Updated At</TableHead>
-              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users?.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell className="text-right">{item.blocked ? "Inactive" : "Active"}</TableCell>
-                <TableCell>{getRelativeTime(item.created_at)}</TableCell>
-                <TableCell>{getRelativeTime(item.updated_at)}</TableCell>
-                <TableCell>
+                <TableCell className="w-[175px]">
                   <Link href={'/admin/user/' + item.id}>
                     <Button variant={'link'}>
                       <Pencil />
@@ -72,12 +66,27 @@ export default function TableUser() {
                     </Button>
                   </Link>
                 </TableCell>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.email}</TableCell>
+                <TableCell className="text-right">{item.blocked ? "Inactive" : "Active"}</TableCell>
+                <TableCell>{getRelativeTime(item.created_at)}</TableCell>
+                <TableCell>{getRelativeTime(item.updated_at)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableHead>Actions</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead className="text-right">Status</TableHead>
+              <TableHead>Created At</TableHead>
+              <TableHead>Updated At</TableHead>
+            </TableRow>
+          </TableFooter>
         </Table>
-        <Pagination>
-          <PaginationContent>
+        <Pagination className="flex mt-4">
+          <PaginationContent className="ml-auto">
             <PaginationItem>
               <PaginationPrevious href="#" />
             </PaginationItem>
