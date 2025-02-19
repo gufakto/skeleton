@@ -1,13 +1,16 @@
 "use client";
 import { UserModel } from "@/models/user";
-import { useState } from "react";
-import Button from "@/components/ui/button/Button";
 import Link from "next/link";
-import Radio from "../form/input/Radio";
 import { BlockedStatus, EditUserForm } from "@/schemas";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { useTransition } from "react";
+import { updateUser } from "@/lib/user";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
 
 type UserDetailProps = {
   user: UserModel;
@@ -18,7 +21,8 @@ const UserDetail: React.FC<UserDetailProps> = ({
     user,
     editable = false,
 }) => {
-    
+    const [ isPending, startTransition ] = useTransition();
+    const router = useRouter()
     const form = useForm<z.infer<typeof EditUserForm>>({
         resolver: zodResolver(EditUserForm),
         defaultValues: {
@@ -39,10 +43,25 @@ const UserDetail: React.FC<UserDetailProps> = ({
     
     const handleSubmit = (values: z.infer<typeof EditUserForm>) => {
         console.log(values);
+        startTransition(async () => {
+            try {
+                const res = await updateUser(user.id, values);
+                console.log(res);
+                if (res.ok) {
+                    toast.success("User updated successfully");
+                    router.push("/admin/user");
+                } else {
+                    toast.error("Failed to update user");
+                }
+            } catch(err: any) {
+                toast.error(err.message);
+            }
+        });
     }
 
     return (<>
     <div className="flex flex-col gap-4">
+        <LoadingFullpage isShown={isPending} />
         <form onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="flex flex-col gap-4 md:flex-row">
             <div className="w-full">
@@ -95,16 +114,13 @@ const UserDetail: React.FC<UserDetailProps> = ({
         </div>
         <div className="flex flex-col gap-4 md:flex-row my-2">
             <div className="w-full flex items-center justify-between">
-                <Link 
-                    href={`/admin/user`} 
-                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-gray-200 border border-transparent rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"> Back</Link>
+                <Link href={`/admin/user`}> 
+                    <Button type="button" variant="outline">Back</Button>
+                </Link>
                 {editable && 
-                <button
-                    type="submit"
-                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
+                <Button type="submit">
                         Submit
-                </button>}
+                </Button>}
             </div>
         </div>
         </form>

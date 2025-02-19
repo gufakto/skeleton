@@ -6,20 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSidebar } from "@/context/SidebarContext";
 import {
   BoxCubeIcon,
-  CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
-  PageIcon,
-  PieChartIcon,
   PlugInIcon,
-  TableIcon,
   UserCircleIcon,
 } from "@/icons/index";
-import SidebarWidget from "@/layout/SidebarWidget";
 import { useSession } from "next-auth/react";
-import FullPageLoader from "@/components/ui/loading/LoadingFullPage";
 
 type NavItem = {
   name: string;
@@ -34,27 +27,6 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     path: "/admin",
   },
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "Calendar",
-  //   path: "/calendar",
-  // },
-  // {
-  //   icon: <UserCircleIcon />,
-  //   name: "User Profile",
-  //   path: "/profile",
-  // },
-
-  // {
-  //   name: "Forms",
-  //   icon: <ListIcon />,
-  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  // },
-  // {
-  //   name: "Tables",
-  //   icon: <TableIcon />,
-  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  // },
   // {
   //   name: "Pages",
   //   icon: <PageIcon />,
@@ -96,7 +68,6 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  console.log("session", session);
   useEffect(() => {
     if (status !== "loading" && !session) {
       router.push("/signin"); // Redirect to login if no session
@@ -381,7 +352,7 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>
     </aside></>
   );

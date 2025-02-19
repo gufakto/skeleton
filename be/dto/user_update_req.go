@@ -3,8 +3,9 @@ package dto
 import "net/mail"
 
 type UserUpdateReq struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Blocked string `json:"blocked"`
 }
 
 func (o *UserUpdateReq) Validate() error {
@@ -12,8 +13,12 @@ func (o *UserUpdateReq) Validate() error {
 		return ErrEmailRequired
 	}
 
-	if err, _ := mail.ParseAddress(o.Email); err != nil {
+	if _, err := mail.ParseAddress(o.Email); err != nil {
 		return ErrInvalidEmail
 	}
 	return nil
+}
+
+func (req *UserUpdateReq) IsBlocked() bool {
+	return req.Blocked == "true"
 }

@@ -8,7 +8,7 @@ interface FullPageLoaderProps {
 const LoadingFullpage: FC<FullPageLoaderProps> = ({ isShown }) => {
     if  (!isShown) return null;
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900 z-999999 bg-opacity-50 flex items-center justify-center">
         <div className="svg-frame">
             <svg style={{
                 "--i":0,
