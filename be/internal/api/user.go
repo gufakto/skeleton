@@ -22,9 +22,10 @@ func NewUser(app *fiber.App, userService domain.UserService, authMid fiber.Handl
 	app.Put("/v1/admin/user/:id", authMid, api.Update)
 	app.Delete("/v1/admin/user/:id", authMid, api.Delete)
 	app.Get("/v1/admin/user/:id", authMid, api.GetByID)
+	app.Post("/v1/admin/user/role", authMid, api.CreateUserRole)
 }
 
-func (api userApi) GetAll(ctx *fiber.Ctx) error {
+func (api *userApi) GetAll(ctx *fiber.Ctx) error {
 	page, _ := strconv.Atoi(ctx.Query("page"))
 	limit, _ := strconv.Atoi(ctx.Query("limit"))
 	if page == 0 {
@@ -42,7 +43,7 @@ func (api userApi) GetAll(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(users)
 }
 
-func (api userApi) Create(ctx *fiber.Ctx) error {
+func (api *userApi) Create(ctx *fiber.Ctx) error {
 	var userReq dto.UserReq
 	if err := ctx.BodyParser(&userReq); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.Response{
@@ -68,7 +69,7 @@ func (api userApi) Create(ctx *fiber.Ctx) error {
 	})
 }
 
-func (api userApi) Update(ctx *fiber.Ctx) error {
+func (api *userApi) Update(ctx *fiber.Ctx) error {
 	var userReq dto.UserUpdateReq
 	if err := ctx.BodyParser(&userReq); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.Response{
@@ -101,7 +102,7 @@ func (api userApi) Update(ctx *fiber.Ctx) error {
 	})
 }
 
-func (api userApi) Delete(ctx *fiber.Ctx) error {
+func (api *userApi) Delete(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.Response{
@@ -119,7 +120,7 @@ func (api userApi) Delete(ctx *fiber.Ctx) error {
 	})
 }
 
-func (api userApi) GetByID(ctx *fiber.Ctx) error {
+func (api *userApi) GetByID(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.Response{
@@ -134,5 +135,28 @@ func (api userApi) GetByID(ctx *fiber.Ctx) error {
 	}
 	return ctx.Status(fiber.StatusOK).JSON(dto.ResponseData{
 		Data: user,
+	})
+}
+
+func (api *userApi) CreateUserRole(ctx *fiber.Ctx) error {
+	var userRoleReq dto.UserRoleReq
+	if err := ctx.BodyParser(&userRoleReq); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.Response{
+			Message: err.Error(),
+		})
+	}
+	if err := userRoleReq.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.Response{
+			Message: err.Error(),
+		})
+	}
+	err := api.userService.CreateUserRole(userRoleReq)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(dto.Response{
+			Message: err.Error(),
+		})
+	}
+	return ctx.Status(fiber.StatusCreated).JSON(dto.Response{
+		Message: "success",
 	})
 }

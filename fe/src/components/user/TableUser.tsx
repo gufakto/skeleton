@@ -1,16 +1,15 @@
 "use client";
 import React, { useEffect, useTransition } from "react";
 import { UserModel } from "@/models/user";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { getRelativeTime } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FilePlus, Info, Pencil } from "lucide-react";
-import { getUsers } from "@/lib/user";
 import { toast } from "react-toastify";
 import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
-import { DeleteUserAlert } from "@/components/user/DeleteAlert";
+import { DynamicTable } from "../tables/DynamicTable";
+import { DeleteUserAlert } from "./DeleteAlert";
+import { getRelativeTime } from "@/lib/utils";
+import { getUsers } from "@/app/admin/user/actions";
 
 
 export default function TableUser() {
@@ -26,7 +25,9 @@ export default function TableUser() {
         }
       } catch (err: any) {
         toast.error(err.message);
-      }
+      };
+
+
     });
   }, [])
 
@@ -39,76 +40,32 @@ export default function TableUser() {
         </Link>
       </div>
       <div className="max-w-full overflow-x-auto mt-2">
-        <Table className="min-w-full table-auto">
-          <TableHeader className="bg-gray-100">
-            <TableRow>
-              <TableHead>Actions</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Updated At</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users?.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="w-[175px]">
-                  <Link href={'/admin/user/' + item.id}>
-                    <Button variant={'link'}>
-                      <Pencil />
-                    </Button>
-                  </Link>
-                  <DeleteUserAlert id={item.id} />
-                  <Link href={'/admin/user/' + item.id + '/detail'}>
-                    <Button variant={'link'} >
-                      <Info />
-                    </Button>
-                  </Link>
-                </TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell className="text-right">{item.blocked ? "Inactive" : "Active"}</TableCell>
-                <TableCell>{getRelativeTime(item.created_at)}</TableCell>
-                <TableCell>{getRelativeTime(item.updated_at)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableHead>Actions</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Updated At</TableHead>
-            </TableRow>
-          </TableFooter>
-        </Table>
-        <Pagination className="flex mt-4">
-          <PaginationContent className="ml-auto">
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <DynamicTable
+          data={users}
+          footer={true}
+          columns={[
+            {
+              name: "action", label: "Action", render: (row) => (<>
+                <Link href={'/admin/user/' + row.id}>
+                  <Button variant={'link'}>
+                    <Pencil />
+                  </Button>
+                </Link>
+                <DeleteUserAlert id={row.id} />
+                <Link href={'/admin/user/' + row.id + '/detail'}>
+                  <Button variant={'link'} >
+                    <Info />
+                  </Button>
+                </Link>
+              </>)
+            },
+            { name: "name", label: "Name" },
+            { name: "email", label: "Email" },
+            { name: "blocked", label: "Status", render: (row) => row.blocked ? "Blocked" : "Active" },
+            { name: "createdAt", label: "Created At", render: (row) => getRelativeTime(row.created_at) },
+            { name: "updatedAt", label: "Updated At", render: (row) => getRelativeTime(row.updated_at) },
+          ]}
+        />
       </div>
     </div>
   );

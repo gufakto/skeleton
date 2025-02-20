@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getRelativeTime(isoDate: string): string {
+  if (!isoDate) return "Invalid date"; // Handle undefined or null input
+
   const date = new Date(isoDate);
+  if (isNaN(date.getTime())) return "Invalid date"; // Ensure date is valid
   const now = new Date();
   const diffMs = date.getTime() - now.getTime(); // Difference in milliseconds
   const diffSec = Math.round(diffMs / 1000);
