@@ -73,8 +73,8 @@ func GenerateTokenAndRefreshToken(username string) (*dto.Tokens, error) {
 	}, nil
 }
 
-func GenerateToken(username string) (*dto.TokenAfterRefresh, error) {
-	cnf := config.Get()
+func GenerateToken(username string, cnf *config.Config) (*dto.TokenAfterRefresh, error) {
+	// cnf := config.Get()
 	jwtSecretKey := []byte(cnf.Token.TokenKey)
 
 	// Access token

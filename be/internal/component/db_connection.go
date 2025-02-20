@@ -23,7 +23,6 @@ func ConnectDB(cnf *config.Config) *gorm.DB {
 		cnf.Database.Username,
 		cnf.Database.Password,
 		cnf.Database.DbName)
-	fmt.Printf("dsn: %s", cnf.Database)
 	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err.Error())

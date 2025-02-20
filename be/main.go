@@ -18,10 +18,12 @@ func main() {
 
 	// REPOSITORY
 	userRepository := repository.NewUser(dbConnection)
+	roleRepository := repository.NewRole(dbConnection)
 
 	// SERVICES
 	userService := service.NewUser(userRepository)
-	authService := service.NewAuth(userRepository)
+	authService := service.NewAuth(userRepository, cnf)
+	roleService := service.NewRole(roleRepository)
 
 	authMid := middleware.Authenticate(cnf)
 
@@ -33,6 +35,7 @@ func main() {
 	}))
 	api.NewUser(app, userService, authMid)
 	api.NewAuth(app, authService)
+	api.NewRole(app, roleService, authMid)
 
 	app.Listen(cnf.Server.Host + ":" + cnf.Server.Port)
 }

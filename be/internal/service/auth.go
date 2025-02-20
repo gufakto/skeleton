@@ -11,11 +11,13 @@ import (
 
 type authService struct {
 	userRepo domain.UserRepository
+	cnf      *config.Config
 }
 
-func NewAuth(userRepo domain.UserRepository) domain.AuthService {
+func NewAuth(userRepo domain.UserRepository, cnf *config.Config) domain.AuthService {
 	return &authService{
 		userRepo: userRepo,
+		cnf:      cnf,
 	}
 }
 
@@ -80,7 +82,7 @@ func (a *authService) RefreshToken(token string) (dto.AuthRes, error) {
 	if user == (domain.User{}) {
 		return dto.AuthRes{}, dto.ErrAccountNotFound
 	}
-	newToken, err := utils.GenerateToken(user.Email)
+	newToken, err := utils.GenerateToken(user.Email, a.cnf)
 
 	if err != nil {
 		return dto.AuthRes{}, err
