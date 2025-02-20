@@ -1,19 +1,19 @@
 "use client";
 import React, { useEffect, useTransition } from "react";
 import { UserModel } from "@/models/user";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { getRelativeTime } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FilePlus, Info, Pencil } from "lucide-react";
 import { getUsers } from "@/lib/user";
 import { toast } from "react-toastify";
-import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
-import { DeleteUserAlert } from "@/components/user/DeleteAlert";
+import LoadingFullpage from "../ui/loading/LoadingFullPage";
+import { DynamicTable } from "../tables/DynamicTable";
+import { DeleteUserAlert } from "../user/DeleteAlert";
 
 
-export default function TableUser() {
+export default function TableRole() {
   const [users, setUsers] = React.useState<UserModel[]>([]);
   const [isPending, startTransition] = useTransition();
 
@@ -39,22 +39,14 @@ export default function TableUser() {
         </Link>
       </div>
       <div className="max-w-full overflow-x-auto mt-2">
-        <Table className="min-w-full table-auto">
-          <TableHeader className="bg-gray-100">
-            <TableRow>
-              <TableHead>Actions</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Updated At</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users?.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="w-[175px]">
-                  <Link href={'/admin/user/' + item.id}>
+        <DynamicTable 
+          columns={[
+            {label: 'Name', name: 'name'}, 
+            {label: 'Email', name: 'email'}, 
+            {label: 'Role', name: 'role'}, 
+            {label: 'Action', name: 'action', render: (item) => {
+              return <>
+              <Link href={'/admin/user/' + item.id}>
                     <Button variant={'link'}>
                       <Pencil />
                     </Button>
@@ -64,27 +56,9 @@ export default function TableUser() {
                     <Button variant={'link'} >
                       <Info />
                     </Button>
-                  </Link>
-                </TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell className="text-right">{item.blocked ? "Inactive" : "Active"}</TableCell>
-                <TableCell>{getRelativeTime(item.created_at)}</TableCell>
-                <TableCell>{getRelativeTime(item.updated_at)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableHead>Actions</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Updated At</TableHead>
-            </TableRow>
-          </TableFooter>
-        </Table>
+                  </Link></>;
+            }}]} 
+          data={users} footer={false} />
         <Pagination className="flex mt-4">
           <PaginationContent className="ml-auto">
             <PaginationItem>
