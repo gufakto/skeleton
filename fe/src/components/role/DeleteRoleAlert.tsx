@@ -1,3 +1,4 @@
+import { deleteRole } from "@/app/admin/role/actions"
 import { deleteUser } from "@/app/admin/user/actions"
 import {
     AlertDialog,
@@ -19,14 +20,14 @@ type Props = {
     id: number
 }
 
-export const DeleteUserAlert: React.FC<Props> = ({ id }) => {
+export const DeleteRoleAlert: React.FC<Props> = ({ id }) => {
     const [isPending, startTransition] = useTransition()
 
-    const deleteUserSubmit = () => {
+    const deleteSubmit = () => {
         startTransition(async () => {
             try {
                 // TODO: delete user
-                const res = await deleteUser(id)
+                const res = await deleteRole(id)
                 if(res.ok) {
                     toast.success('User deleted successfully');
                     setTimeout(() => {
@@ -59,7 +60,7 @@ export const DeleteUserAlert: React.FC<Props> = ({ id }) => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isPending}>No</AlertDialogCancel>
-                    <AlertDialogAction disabled={isPending} onClick={deleteUserSubmit}>Yes</AlertDialogAction>
+                    <AlertDialogAction disabled={isPending} onClick={deleteSubmit}>Yes</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

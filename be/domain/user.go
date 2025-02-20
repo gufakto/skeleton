@@ -34,6 +34,8 @@ type UserService interface {
 	Update(user dto.UserUpdateReq, id int64) (dto.UserData, error)
 	Delete(id int64) error
 	GetByID(id int64) (dto.UserData, error)
+	GetByEmail(email string) (dto.UserData, error)
+	CreateUserRole(userRoles dto.UserRoleReq) error
 }
 
 type AuthService interface {

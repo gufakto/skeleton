@@ -1,4 +1,5 @@
-import { DynamicTableColumn } from "@/models/role";
+
+import { DynamicTableColumn } from "@/models/table";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table";
 
 interface DynamicTableProps<T> {
@@ -12,6 +13,9 @@ export const DynamicTable = <T,>({
     data,
     footer = true
 }: DynamicTableProps<T>) => {
+    if (!data || data.length === 0) {
+        return <div>No data available</div>;
+    }
     return (<>
         <Table className="min-w-full table-auto">
             <TableHeader className="bg-gray-100">
@@ -22,7 +26,7 @@ export const DynamicTable = <T,>({
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {data.map((item: any, index) => (
+                {data.length>0 ? data.map((item: any, index) => (
                         <TableRow key={index}>
                             {columns.map((column, index) => (
                                 <TableCell key={index}>
@@ -30,7 +34,7 @@ export const DynamicTable = <T,>({
                                 </TableCell>
                             ))}
                         </TableRow>
-                    ))}
+                    )):null}
             </TableBody>
             {footer && (
                 <TableFooter>

@@ -8,9 +8,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
-import { createUser } from "@/lib/user";
 import { useRouter } from "next/navigation";
 import { Eye, EyeClosed, SaveIcon, Undo2 } from "lucide-react";
+import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
+import { createUser } from "@/app/admin/user/actions";
 
 const CreateUser = () => {
     const [isPending, startTransition] = useTransition();
@@ -44,16 +45,15 @@ const CreateUser = () => {
     const showPassword = () => {
         const passwordInput = document.getElementById("password") as HTMLInputElement;
         if (passwordInput.type === "password") {
-            // passwordInput.type = "text";
             setIsShowedPass(true)
         } else {
-            // passwordInput.type = "password";
             setIsShowedPass(false)
         }
     }
 
     return (
         <Form {...userForm}>
+            <LoadingFullpage isShown={isPending} />
             <form onSubmit={userForm.handleSubmit(submitUser)} className="space-y-8">
                 <FormField
                     control={userForm.control}

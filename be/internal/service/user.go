@@ -10,12 +10,14 @@ import (
 )
 
 type userService struct {
-	userRepo domain.UserRepository
+	userRepo     domain.UserRepository
+	userRoleRepo domain.UserRoleRepository
 }
 
-func NewUser(userRepo domain.UserRepository) domain.UserService {
+func NewUser(userRepo domain.UserRepository, userRoleRepo domain.UserRoleRepository) domain.UserService {
 	return &userService{
-		userRepo: userRepo,
+		userRepo:     userRepo,
+		userRoleRepo: userRoleRepo,
 	}
 }
 
@@ -119,4 +121,37 @@ func (u *userService) GetPaginate(page int, limit int) ([]dto.UserData, error) {
 		users = make([]dto.UserData, 0)
 	}
 	return users, nil
+}
+
+func (u *userService) GetByEmail(email string) (dto.UserData, error) {
+	dataset, err := u.userRepo.GetByEmail(email)
+	if err != nil {
+		return dto.UserData{}, err
+	}
+	if dataset == (domain.User{}) {
+		return dto.UserData{}, dto.ErrNoDataFound
+	}
+	return dto.UserData{
+		ID:        dataset.ID,
+		Name:      dataset.Name,
+		Email:     dataset.Email,
+		Blocked:   dataset.Blocked,
+		CreatedAt: dataset.CreatedAt,
+		UpdatedAt: dataset.UpdatedAt,
+	}, nil
+}
+
+func (u *userService) CreateUserRole(userRoles dto.UserRoleReq) error {
+	var userRoleData []domain.UserRole
+	for _, roleID := range userRoles.RoleID {
+		userRoleData = append(userRoleData, domain.UserRole{
+			UserID: userRoles.UserID,
+			RoleID: roleID,
+		})
+	}
+	err := u.userRoleRepo.CreateMultiple(userRoleData)
+	if err != nil {
+		return err
+	}
+	return nil
 }

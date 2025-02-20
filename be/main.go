@@ -19,11 +19,14 @@ func main() {
 	// REPOSITORY
 	userRepository := repository.NewUser(dbConnection)
 	roleRepository := repository.NewRole(dbConnection)
+	userRoleRepository := repository.NewUserRole(dbConnection)
+	menuRepository := repository.NewMenu(dbConnection)
 
 	// SERVICES
-	userService := service.NewUser(userRepository)
+	userService := service.NewUser(userRepository, userRoleRepository)
 	authService := service.NewAuth(userRepository, cnf)
 	roleService := service.NewRole(roleRepository)
+	menuServoce := service.NewMenu(menuRepository)
 
 	authMid := middleware.Authenticate(cnf)
 
@@ -33,9 +36,11 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Content-Length, X-Requested-With",
 		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}))
+
 	api.NewUser(app, userService, authMid)
 	api.NewAuth(app, authService)
 	api.NewRole(app, roleService, authMid)
+	api.NewMenu(app, menuServoce, authMid)
 
 	app.Listen(cnf.Server.Host + ":" + cnf.Server.Port)
 }
