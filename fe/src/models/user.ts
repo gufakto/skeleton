@@ -20,3 +20,8 @@ export const CreateUserForm = z.object({
     message: "Password must be at least 4 characters",
   })
 });
+
+export const AssignRoleForm = z.object({
+  roles: z.array(z.number()),
+  user:  z.number(),
+})

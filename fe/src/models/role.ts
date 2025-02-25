@@ -9,6 +9,11 @@ export interface RoleModel {
     updatedAt: string;
 }
 
+export interface RoleOptions {
+  value: string;
+  label: string;
+}
+
 export const RoleForm = z.object({
   name: z.string().min(2, {
     message: "Name is required",

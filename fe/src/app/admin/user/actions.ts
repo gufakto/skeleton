@@ -1,7 +1,7 @@
 "use server";
 import * as z from "zod";
 import { authOptions } from "@/lib/auth";
-import { CreateUserForm } from "@/models/user";
+import { AssignRoleForm, CreateUserForm } from "@/models/user";
 import axios from "axios";
 import { getServerSession } from "next-auth";
 import { EditUserForm } from "@/schemas";
@@ -103,6 +103,30 @@ export const deleteUser = async (id: number) => {
         });
         if (response.status != 200) {
             return { ok: false, error: "Failed to delete user" }
+        }
+        return { ok: true, data: response.data }
+    } catch (error: any) {
+        console.log("ERR GOLANG", error?.response.data);
+        return { ok: false, error: error?.response.data || "Invalid request body" }
+    }
+}
+
+export const assignToleToUser = async (values: z.infer<typeof AssignRoleForm>) => {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return { ok: false, error: "Unauthorized" }
+    }
+
+    try {
+        const response = await axios.post(`${API_URL}/role`, values, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.accessToken}`,
+            }
+        });
+        
+        if (response.status != 201) {
+            return { ok: false, error: "Failed to assign role to user" }
         }
         return { ok: true, data: response.data }
     } catch (error: any) {

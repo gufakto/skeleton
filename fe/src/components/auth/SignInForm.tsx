@@ -4,14 +4,14 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { FormLogin } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputCustom } from "@/components/form/input/InputCustome";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
 import { toast } from "react-toastify";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -22,7 +22,8 @@ export default function SignInForm() {
   const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
+  const { data: session, status } = useSession();
+  
   const form = useForm<z.infer<typeof FormLogin>>({
     resolver: zodResolver(FormLogin),
     defaultValues: {
@@ -30,6 +31,12 @@ export default function SignInForm() {
       password: "",
     }
   });
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.push("/admin");
+    }
+  }, [session, status]);
 
   const onSubmit = (values: z.infer<typeof FormLogin>) => {
     startTransition(async () => {

@@ -1,20 +1,25 @@
 "use client";
-import React, { useEffect, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { UserModel } from "@/models/user";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { FilePlus, Info, Pencil } from "lucide-react";
+import { FilePlus, Pencil } from "lucide-react";
 import { toast } from "react-toastify";
 import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
 import { DynamicTable } from "../tables/DynamicTable";
 import { DeleteUserAlert } from "./DeleteAlert";
 import { getRelativeTime } from "@/lib/utils";
 import { getUsers } from "@/app/admin/user/actions";
+import { AssignRoleDialog } from "./AssignRole";
+import { RoleModel, RoleOptions } from "@/models/role";
+import { getRoles } from "@/app/admin/role/actions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 
 export default function TableUser() {
   const [users, setUsers] = React.useState<UserModel[]>([]);
   const [isPending, startTransition] = useTransition();
+  const [roles, setRoles] = useState<RoleOptions[]>([])
 
   useEffect(() => {
     startTransition(async () => {
@@ -23,11 +28,15 @@ export default function TableUser() {
         if (res.ok) {
           setUsers(res.data);
         }
+
+        const roles = await getRoles()
+        if (roles.ok) {
+          setRoles(roles?.data?.data?.map((item: RoleModel) => ({ value: item.id, label: item.name })))
+        }
+
       } catch (err: any) {
         toast.error(err.message);
       };
-
-
     });
   }, [])
 
@@ -45,18 +54,25 @@ export default function TableUser() {
           footer={true}
           columns={[
             {
-              name: "action", label: "Action", render: (row) => (<>
-                <Link href={'/admin/user/' + row.id}>
-                  <Button variant={'link'}>
-                    <Pencil />
-                  </Button>
-                </Link>
+              name: "action", label: "Action", render: (row: UserModel) => (<>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Link href={'/admin/user/' + row.id}>
+                          <Button variant={'link'}>
+                            <Pencil />
+                          </Button>
+                        </Link>
+                      
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Update user </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <DeleteUserAlert id={row.id} />
-                <Link href={'/admin/user/' + row.id + '/detail'}>
-                  <Button variant={'link'} >
-                    <Info />
-                  </Button>
-                </Link>
+                <AssignRoleDialog user={row} roles={roles} />
               </>)
             },
             { name: "name", label: "Name" },

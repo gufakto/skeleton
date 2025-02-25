@@ -13,7 +13,7 @@ import {
   UserCircleIcon,
 } from "@/icons/index";
 import { useSession } from "next-auth/react";
-import { BikeIcon } from "lucide-react";
+import { BikeIcon, MenuIcon } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -48,6 +48,11 @@ const othersItems: NavItem[] = [
     icon: <BikeIcon />,
     name: "Roles",
     path: "/admin/role",
+  },
+  {
+    icon: <MenuIcon />,
+    name: "Menus",
+    path: "/admin/menu",
   },
   {
     icon: <BoxCubeIcon />,

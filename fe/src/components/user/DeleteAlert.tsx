@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { AlertCircle, Trash2 } from "lucide-react"
 import React, { useTransition } from "react"
 import { toast } from "react-toastify"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 
 type Props = {
     id: number
@@ -27,7 +28,7 @@ export const DeleteUserAlert: React.FC<Props> = ({ id }) => {
             try {
                 // TODO: delete user
                 const res = await deleteUser(id)
-                if(res.ok) {
+                if (res.ok) {
                     toast.success('User deleted successfully');
                     setTimeout(() => {
                         window.location.reload()
@@ -35,7 +36,7 @@ export const DeleteUserAlert: React.FC<Props> = ({ id }) => {
                 } else {
                     toast.error('Failed to delete user')
                 }
-            } catch(err: any) {
+            } catch (err: any) {
                 toast.error(err.message)
             }
         })
@@ -43,11 +44,20 @@ export const DeleteUserAlert: React.FC<Props> = ({ id }) => {
 
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button variant={'link'} >
-                    <Trash2 />
-                </Button>
-            </AlertDialogTrigger>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild>
+                            <Button variant={'link'} >
+                                <Trash2 />
+                            </Button>
+                        </AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Remove user </p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
             <AlertDialogContent className="z-999999">
                 <AlertDialogHeader>
                     <AlertDialogTitle>

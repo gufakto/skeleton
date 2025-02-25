@@ -2,7 +2,9 @@ import SignInForm from "@/components/auth/SignInForm";
 import GridShape from "@/components/common/GridShape";
 import LoadingFullpage from "@/components/ui/loading/LoadingFullPage";
 import { useLoading } from "@/context/LoadingContext";
+import { authOptions } from "@/lib/auth";
 import { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
   description: "CMS Panel SignIn Page | Property Investment",
 };
 
-export default function SignIn() {
+export default async function SignIn() {
   
   return (
     <div className="relative flex w-full h-screen px-4 py-6 overflow-hidden bg-white z-1 dark:bg-gray-900 sm:p-0">
