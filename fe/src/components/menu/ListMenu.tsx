@@ -19,10 +19,13 @@ import {
   Edit,
   ChevronRight,
   ChevronDown,
+  LayoutDashboard,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { TreeNode } from "@/models/menu";
+import { getLucideIcon } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 
 
@@ -54,6 +57,7 @@ export const DraggableMenu:FC<Props> = ({menus}) => {
   const [tree, setTree] = useState<TreeNode[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
   const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
+  const router = useRouter()
   useEffect(() => {
     setTree(menus)
   },[menus]);
@@ -108,6 +112,7 @@ export const DraggableMenu:FC<Props> = ({menus}) => {
 
   // Edit a node’s name (recursive update)
   const handleEdit = (id: string, newName: string) => {
+    // console.log("handleEdit", id, newName);
     const updateItem = (nodes: TreeNode[]): TreeNode[] =>
       nodes.map((node) =>
         node.id === id
@@ -174,7 +179,9 @@ function TreeNodeComponent({
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
+  const Icon = getLucideIcon(node.icon);
+  const router = useRouter()
+  
   const isExpanded = expanded.includes(node.id);
   const toggleExpand = () => {
     setExpanded(isExpanded ? expanded.filter((id) => id !== node.id) : [...expanded, node.id]);
@@ -188,6 +195,7 @@ function TreeNodeComponent({
             {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
           </button>
         )}
+        <Icon className="w-5 h-5 text-blue-500" />
         <button {...attributes} {...listeners} className="cursor-grab p-2">
           <GripVertical size={20} />
         </button>
@@ -208,7 +216,10 @@ function TreeNodeComponent({
         )}
 
         <button
-          onClick={() => setEditing({ id: node.id, name: node.name })}
+          onClick={() => {
+            // setEditing({ id: node.id, name: node.name })
+            router.push(`/admin/menu/${node.id}`)
+          }}
           className="p-2 text-blue-500"
         >
           <Edit size={18} />

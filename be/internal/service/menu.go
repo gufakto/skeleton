@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gufakto/cms/domain"
 	"github.com/gufakto/cms/dto"
+	"github.com/gufakto/cms/internal/utils"
 )
 
 type menuService struct {
@@ -21,6 +22,7 @@ func (m *menuService) Create(menu *dto.MenuReq) error {
 		Name:        menu.Name,
 		Description: menu.Description,
 		ParentID:    menu.ParentID,
+		Icon:        menu.Icon,
 	}
 	err := m.menuRepo.Create(&data)
 	return err
@@ -43,28 +45,31 @@ func (m *menuService) GetByID(id int64) (dto.MenuRes, error) {
 		Name:        res.Name,
 		Description: res.Description,
 		ParentID:    res.ParentID,
+		Icon:        res.Icon,
 		CreatedAt:   res.CreatedAt,
 		UpdatedAt:   res.UpdatedAt,
 	}, nil
 }
 
 // GetByParentID implements domain.MenuService.
-func (m *menuService) GetByParentID(parentID int64) ([]dto.MenuRes, error) {
+func (m *menuService) GetByParentID(parentID int64) ([]*dto.MenuRes, error) {
 	res, err := m.menuRepo.GetByParentID(parentID)
 	if err != nil {
-		return []dto.MenuRes{}, err
+		return []*dto.MenuRes{}, err
 	}
-	var resDto []dto.MenuRes
-	for _, v := range res {
-		resDto = append(resDto, dto.MenuRes{
-			ID:          v.ID,
-			Name:        v.Name,
-			Description: v.Description,
-			ParentID:    v.ParentID,
-			CreatedAt:   v.CreatedAt,
-			UpdatedAt:   v.UpdatedAt,
-		})
-	}
+	// var resDto []dto.MenuRes
+	// for _, v := range res {
+	// 	resDto = append(resDto, dto.MenuRes{
+	// 		ID:          v.ID,
+	// 		Name:        v.Name,
+	// 		Description: v.Description,
+	// 		ParentID:    v.ParentID,
+	// 		Icon:        v.Icon,
+	// 		CreatedAt:   v.CreatedAt,
+	// 		UpdatedAt:   v.UpdatedAt,
+	// 	})
+	// }
+	resDto := utils.BuildMenuTree(res)
 	return resDto, nil
 }
 
@@ -75,26 +80,30 @@ func (m *menuService) Update(id int64, menu *dto.MenuReq) error {
 		Name:        menu.Name,
 		Description: menu.Description,
 		ParentID:    menu.ParentID,
+		Icon:        menu.Icon,
 	})
 	return err
 }
 
 // GetPaginate implements domain.MenuService.
-func (m *menuService) GetPaginate(page int, limit int) ([]dto.MenuRes, error) {
+func (m *menuService) GetPaginate(page int, limit int) ([]*dto.MenuRes, error) {
 	res, err := m.menuRepo.GetPaginate(page, limit)
 	if err != nil {
-		return []dto.MenuRes{}, err
+		return []*dto.MenuRes{}, err
 	}
-	var resDto []dto.MenuRes
-	for _, v := range res {
-		resDto = append(resDto, dto.MenuRes{
-			ID:          v.ID,
-			Name:        v.Name,
-			Description: v.Description,
-			ParentID:    v.ParentID,
-			CreatedAt:   v.CreatedAt,
-			UpdatedAt:   v.UpdatedAt,
-		})
-	}
+	// var resDto []dto.MenuRes
+	// for _, v := range res {
+	// 	resDto = append(resDto, dto.MenuRes{
+	// 		ID:          v.ID,
+	// 		Name:        v.Name,
+	// 		Description: v.Description,
+	// 		ParentID:    v.ParentID,
+	// 		Icon:        v.Icon,
+	// 		CreatedAt:   v.CreatedAt,
+	// 		UpdatedAt:   v.UpdatedAt,
+	// 	})
+	// }
+	resDto := utils.BuildMenuTree(res)
+
 	return resDto, nil
 }

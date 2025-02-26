@@ -8,6 +8,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/gufakto/cms/domain"
 	"github.com/gufakto/cms/dto"
 	"github.com/gufakto/cms/internal/config"
 	"github.com/lib/pq"
@@ -84,4 +85,45 @@ func ListenForNotificationTriggerFromDatabase(cnf *config.Config, conn *sql.DB) 
 			fmt.Println("⏳ Waiting for notifications...")
 		}
 	}
+}
+
+// Convert Menu slice to MenuRes hierarchy
+func BuildMenuTree(menus []domain.Menu) []*dto.MenuRes {
+	// Map for quick lookup
+	menuMap := make(map[int64]*dto.MenuRes)
+
+	// Convert Menu to MenuRes and store in map
+	for _, menu := range menus {
+		menuMap[menu.ID] = &dto.MenuRes{
+			ID:          menu.ID,
+			Name:        menu.Name,
+			Description: menu.Description,
+			Icon:        menu.Icon,
+			ParentID:    menu.ParentID,
+			CreatedAt:   menu.CreatedAt,
+			UpdatedAt:   menu.UpdatedAt,
+			Childs:      []*dto.MenuRes{},
+		}
+	}
+
+	// Root menus slice
+	var rootMenus []*dto.MenuRes
+
+	// Build parent-child relationships
+	for _, menu := range menuMap {
+		if menu.ParentID == 0 {
+			// Root menu
+			rootMenus = append(rootMenus, menu)
+		} else {
+			// Add as child to its parent if exists
+			if parent, exists := menuMap[menu.ParentID]; exists {
+				// fmt.Println("PARENT", parent)
+				// fmt.Println("CHILD", menu)
+				parent.Childs = append(parent.Childs, menu)
+
+			}
+		}
+	}
+
+	return rootMenus
 }

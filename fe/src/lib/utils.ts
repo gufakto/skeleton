@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import * as Icons from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -28,3 +30,7 @@ export function getRelativeTime(isoDate: string): string {
   if (Math.abs(diffMonths) < 12) return rtf.format(diffMonths, "months");
   return rtf.format(diffYears, "years");
 }
+
+export const getLucideIcon = (iconName: string): LucideIcon => {
+  return (Icons as any)[iconName] || Icons.Folder;
+};

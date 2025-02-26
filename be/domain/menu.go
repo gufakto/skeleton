@@ -6,6 +6,7 @@ type Menu struct {
 	ID          int64  `gorm:"id"`
 	Name        string `gorm:"name"`
 	Description string `gorm:"description"`
+	Icon        string `gorm:"icon"`
 	ParentID    int64  `gorm:"parent_id"`
 	CreatedAt   string `gorm:"created_at"`
 	UpdatedAt   string `gorm:"updated_at"`
@@ -23,6 +24,6 @@ type MenuService interface {
 	Update(id int64, menu *dto.MenuReq) error
 	Delete(id int64) error
 	GetByID(id int64) (dto.MenuRes, error)
-	GetByParentID(parentID int64) ([]dto.MenuRes, error)
-	GetPaginate(page int, limit int) ([]dto.MenuRes, error)
+	GetByParentID(parentID int64) ([]*dto.MenuRes, error)
+	GetPaginate(page int, limit int) ([]*dto.MenuRes, error)
 }

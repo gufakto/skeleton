@@ -5,14 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FC, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 // import Select from "react-select";
 import { Button } from "../ui/button";
 import { SaveIcon, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createMenu, getMenus } from "@/app/admin/menu/actions";
+import { createMenu, getMenus, updateMenu } from "@/app/admin/menu/actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { toast } from "react-toastify";
 
@@ -37,6 +37,16 @@ export const MenuForm: FC<Props> = ({ menu }) => {
             }
         })
     }, [])
+    useEffect(() => {
+        if(menu) {
+            form.reset({
+                name: menu?.name || "",
+                description: menu?.description || "",
+                parent_id: menu?.parent_id || 0,
+                icon: menu?.icon || "",
+            })
+        }
+    }, [menu])
     
     const form = useForm<z.infer<typeof MenuSchema>>({
         resolver: zodResolver(MenuSchema),
@@ -44,13 +54,14 @@ export const MenuForm: FC<Props> = ({ menu }) => {
             name: menu?.name || "",
             description: menu?.description || "",
             parent_id: menu?.parent_id || 0,
+            icon: menu?.icon || "",
         }
     })
-
     const onSubmit = (values: z.infer<typeof MenuSchema>) => {
         startTransition(async () => {
             try {
                 if(!menu) {
+                    console.log(values)
                     const res = await createMenu(values);
                     if(res.ok) {
                         toast.success("Success to save data menu");
@@ -58,7 +69,16 @@ export const MenuForm: FC<Props> = ({ menu }) => {
                     } else {
                         toast.error("Failed to save data menu");
                     }
-                } 
+                } else {
+                    console.log(values)
+                    const res = await updateMenu(menu.id, values);
+                    if(res.ok) {
+                        toast.success("Success to save data menu");
+                        router.push("/admin/menu")
+                    } else {
+                        toast.error("Failed to save data menu");
+                    }
+                }
             } catch(err: any) {
                 toast.error(err.message || "something wrong when try to save data")
             }
@@ -86,7 +106,10 @@ export const MenuForm: FC<Props> = ({ menu }) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className='pl-2'>Parent</FormLabel>
-                            <Select value={field.value?.toString()??"0"} onValueChange={field.onChange}>
+                            <Select 
+                                value={field.value?.toString()??"0"} 
+                                onValueChange={(val) => field.onChange(parseInt(val))}
+                            >
                                 <FormControl>
                                     <SelectTrigger >
                                         <SelectValue placeholder="Select menu parent" />
@@ -100,6 +123,22 @@ export const MenuForm: FC<Props> = ({ menu }) => {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="icon"
+                    render={({ field })=>(
+                        <FormItem>
+                            <FormLabel>Icon</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Icon of menu" {...field} />
+                            </FormControl>
+                                <FormDescription className="text-xs text-orange-400">
+                                    <a href="https://lucide.dev/icons/" target="_blank">Icons</a>
+                                </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}

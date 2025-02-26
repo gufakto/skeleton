@@ -43,8 +43,19 @@ export const TableMenu = () => {
         startTransition(async () => {
             try {
                 const res = await getMenus()
+                
                 if (res.ok) {
-                    setMenus(res.data?.data?.map((item: MenuModel) => ({ id: item.id, name: item.name, children: null })))
+                    if(res?.data?.data?.length>0) {
+                        setMenus(res.data?.data?.map((item: MenuModel) => ({ 
+                            id: item.id, 
+                            name: item.name, 
+                            icon: item.icon, 
+                            children: item.childs?.map((chd: MenuModel) => ({
+                                id: chd.id, 
+                                name: chd.name, 
+                                icon: chd.icon
+                            })) })))
+                    }
                 }
                 
             } catch (err: any) {

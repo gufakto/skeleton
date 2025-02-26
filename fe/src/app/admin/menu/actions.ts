@@ -18,7 +18,7 @@ export const getMenus = async () => {
                 Authorization: `Bearer ${session.accessToken}`,
             },
         });
-        // console.log("SERVER", response.data.data)
+        
         return { ok: true, data: response.data };
     } catch (error: any) {
         console.error("Error fetching menu:", error);
@@ -40,6 +40,42 @@ export const createMenu = async (values: z.infer<typeof MenuSchema>) => {
         return { ok: true, data: res.data}
     } catch(err: any) {
         console.log("Error fetching create menu", err);
+        return { ok: false, error: err?.response.data || "Internal server error"}
+    }
+}
+
+export const getMenu = async (id: string) => {
+    const session = await getServerSession(authOptions)
+    if(!session) {
+        return { ok: false, error: "Unauthorized" }
+    }
+    try {
+        const res = await axios.get(`${API_URL}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${session?.accessToken}`
+            }
+        });
+        return { ok: true, data: res.data}
+    } catch(err: any) {
+        console.log("Error fetching menu", err);
+        return { ok: false, error: err?.response.data || "Internal server error"}
+    }
+}
+
+export const updateMenu = async (id: number, values: z.infer<typeof MenuSchema>) => {
+    const session = await getServerSession(authOptions)
+    if(!session) {
+        return { ok: false, error: "Unauthorized" }
+    }
+    try {
+        const res = await axios.put(`${API_URL}/${id}`, values, {
+            headers: {
+                Authorization: `Bearer ${session?.accessToken}`
+            }
+        });
+        return { ok: true, data: res.data}
+    } catch(err: any) {
+        console.log("Error fetching update menu", err);
         return { ok: false, error: err?.response.data || "Internal server error"}
     }
 }
